@@ -108,3 +108,37 @@ Para operar bancos de dados relacionais com eficiência, é crucial compreender 
 * **Esquema (Schema):** Espaço lógico que organiza fisicamente as tabelas, views, procedures e índices associados a um projeto.
 * **Instruções (Statements):** Linhas de comando ou queries SQL executadas contra o banco para realizar uma ação.
 * **Indexação (Indexing):** Estrutura física otimizada (geralmente baseada em B-Tree) que acelera drasticamente a velocidade de busca e recuperação de registros em colunas frequentemente consultadas.
+
+  ---
+
+## 🛠️ DDL na Prática: Criação de Tabela (MySQL)
+
+Para iniciar a criação de estruturas de dados, primeiro selecionamos o banco de dados (esquema) ativo e, em seguida, declaramos a estrutura da tabela utilizando o comando `CREATE TABLE`.
+
+```sql
+-- Seleciona o banco de dados/esquema de trabalho
+USE teste;
+
+-- Cria a tabela 'person' com seus respectivos campos e tipos de dados
+CREATE TABLE person (
+    person_id SMALLINT UNSIGNED,
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    gender ENUM('M', 'F'),
+    birth_date DATE, 
+    street VARCHAR(30),
+    city VARCHAR(20),
+    state VARCHAR(20), 
+    country VARCHAR(20),
+    postal_code VARCHAR(20),
+    CONSTRAINT pk_person PRIMARY KEY (person_id)
+);
+```
+## O que é o CONSTRAINT?
+
+No exemplo acima, utilizamos a instrução final: `CONSTRAINT pk_person PRIMARY KEY (person_id)`.
+
+**Constraint (Restrição)** é uma regra de integridade aplicada a uma coluna para garantir que os dados inseridos sejam válidos, consistentes e confiáveis.
+
+* **`CONSTRAINT pk_person`**: Estamos dando o nome explícito de "pk_person" para a nossa regra. Nomear a constraint é uma boa prática que facilita a manutenção, caso precise alterar ou deletar essa regra no futuro.
+* **`PRIMARY KEY (person_id)`**: Define que a coluna `person_id` é a Chave Primária da tabela. Isso aplica duas regras automáticas: o banco não aceitará valores repetidos (garantindo um ID único) e não permitirá que esse campo seja nulo (`NOT NULL`).
