@@ -26,7 +26,9 @@ CREATE TABLE person (
     postal_code VARCHAR(20),
     CONSTRAINT pk_person PRIMARY KEY (person_id)
 );
+```
 
+---
 ### Detalhes do Uso Prático
 
 * **`CONSTRAINT pk_person`**: Estamos a atribuir o nome explícito de "pk_person" à nossa regra. Nomear a restrição é uma excelente prática técnica que facilita imenso a manutenção futura do esquema, caso seja necessário alterar ou eliminar esta regra.
