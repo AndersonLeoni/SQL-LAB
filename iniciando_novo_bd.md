@@ -1,4 +1,4 @@
-Criar o Primeiro Schema e Tabela
+# Criar o Primeiro Schema e Tabela
 
 O primeiro passo prático num Sistema Gestor de Bases de Dados (SGBD) é criar o espaço lógico (*schema*) e, em seguida, as estruturas das tabelas.
 
