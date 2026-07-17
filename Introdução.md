@@ -133,7 +133,7 @@ CREATE TABLE person (
     postal_code VARCHAR(20),
     CONSTRAINT pk_person PRIMARY KEY (person_id)
 );
-```
+```markdown
 ## O que é o CONSTRAINT?
 
 No exemplo acima, utilizamos a instrução final: `CONSTRAINT pk_person PRIMARY KEY (person_id)`.
@@ -142,3 +142,93 @@ No exemplo acima, utilizamos a instrução final: `CONSTRAINT pk_person PRIMARY 
 
 * **`CONSTRAINT pk_person`**: Estamos dando o nome explícito de "pk_person" para a nossa regra. Nomear a constraint é uma boa prática que facilita a manutenção, caso precise alterar ou deletar essa regra no futuro.
 * **`PRIMARY KEY (person_id)`**: Define que a coluna `person_id` é a Chave Primária da tabela. Isso aplica duas regras automáticas: o banco não aceitará valores repetidos (garantindo um ID único) e não permitirá que esse campo seja nulo (`NOT NULL`).
+
+---
+```markdown
+# Fundamentos SQL: Comandos, Cláusulas e Modelagem de Dados
+
+Uma visão estruturada sobre a classificação dos comandos, lógica de execução de consultas e conceitos fundamentais de modelagem em bancos de dados relacionais.
+
+---
+
+## 🗂️ 1. Classificação dos Comandos SQL
+
+A linguagem SQL é estruturada em diferentes sublinguagens para separar as suas responsabilidades:
+
+*   **DML (Data Manipulation Language):** Reúne os comandos utilizados para manipular os dados reais dentro das tabelas.
+    *   *Principais comandos:* `INSERT`, `UPDATE`, `DELETE` e `MERGE`.
+*   **DQL (Data Query Language):** É a parte do SQL focada exclusivamente na consulta e extração de dados.
+    *   *Principal comando:* `SELECT` (retorna registos de uma ou mais tabelas).
+*   **DCL (Data Control Language):** Controla as permissões de acesso e a segurança do banco de dados.
+    *   *Principais comandos:* `GRANT` (concede privilégios) e `REVOKE` (remove privilégios).
+
+---
+
+## 📜 2. Estrutura e Instruções SQL
+
+### O que é um Statement?
+Um *statement* (instrução) é um comando SQL completo e reconhecido pelo banco de dados. Dependendo da sua natureza, pode retornar dados, modificar registos, alterar estruturas ou gerir acessos.
+
+### Cláusulas SQL e a Ordem Lógica de Execução
+As cláusulas são os blocos de construção de uma instrução SQL. Num comando `SELECT`, as cláusulas seguem uma ordem lógica rigorosa de processamento pelo motor do banco de dados:
+
+| Ordem Lógica | Cláusula | Função Principal |
+| :--- | :--- | :--- |
+| **1º** | `FROM` | Indica a tabela de origem dos dados. |
+| **2º** | `WHERE` | Filtra as linhas linha a linha antes do agrupamento. |
+| **3º** | `GROUP BY` | Agrupa os registos filtrados por uma ou mais colunas. |
+| **4º** | `HAVING` | Filtra os grupos consolidados pelo `GROUP BY`. |
+| **5º** | `SELECT` | Define quais colunas e cálculos serão projetados/exibidos. |
+| **6º** | `ORDER BY` | Ordena o resultado final que será entregue. |
+
+---
+
+## ⚙️ 3. Funções e Terminologia
+
+### Funções SQL
+São comandos que executam operações internas e retornam um valor derivado.
+*   *Exemplos:* `NOW()` (retorna a data e hora atuais) e `COUNT()` (conta a quantidade de registos).
+*   *Particularidade:* Em alguns bancos de dados, como o Oracle, quando precisamos testar uma função ou cálculo sem uma tabela real de origem, utilizamos o comando `FROM dual`, que atua como uma tabela auxiliar virtual (tabela dummy).
+
+### Dicionário de Termos Essenciais
+*   **Identificador:** O nome atribuído a uma tabela, coluna, *alias* (apelido) ou objeto dentro do banco.
+*   **Operador:** Símbolo ou palavra-chave utilizada para realizar comparações ou cálculos (Ex: `=`, `>`, `AND`, `OR`).
+*   **Constante:** Um valor fixo e literal inserido diretamente na consulta (Ex: `'Maria'`, `10`, `1`).
+*   **Expressão:** Qualquer combinação lógica de identificadores, operadores, constantes e funções que, ao ser avaliada, gera um único valor de resultado.
+
+---
+
+## 📐 4. Modelagem de Dados
+
+Para desenhar um banco de dados de forma eficiente, dividimos o planeamento em etapas de abstração:
+
+*   **Modelo ER (Entidade-Relacionamento):** É um modelo *conceitual*. Focado na fase de planeamento e levantamento de requisitos estruturais, apresenta de forma visual as Entidades do negócio, os seus Atributos principais e os Relacionamentos entre elas. 
+*   **Modelo Relacional:** É um modelo *lógico*. Traduz a teoria pensada no Modelo ER para representações práticas de tabelas, colunas, chaves primárias e chaves estrangeiras, preparando o esquema para a implementação técnica no SGBD.
+
+---
+
+## 🚀 5. Exemplo Prático de Consulta (DQL)
+
+Abaixo, apresentamos uma instrução `SELECT` que aplica todas as cláusulas na sua ordem lógica de sintaxe:
+
+```sql
+SELECT cidade, COUNT(*) AS total
+FROM clientes
+WHERE ativo = 1
+GROUP BY cidade
+HAVING COUNT(*) > 5
+ORDER BY total DESC;
+
+```
+```
+**Análise passo a passo da execução:**
+
+1. **`FROM clientes`:** Define a base de dados em que as informações serão procuradas.
+2. **`WHERE ativo = 1`:** Exclui previamente todos os clientes inativos.
+3. **`GROUP BY cidade`:** Consolida os clientes ativos agrupando-os por cada cidade.
+4. **`HAVING COUNT(*) > 5`:** Aplica uma restrição pós-agrupamento, mantendo apenas as cidades que possuem mais de 5 clientes ativos.
+5. **`SELECT cidade, COUNT(*)`:** Projeta no ecrã o nome da cidade acompanhado do somatório de clientes, renomeado temporariamente para `total` (alias).
+6. **`ORDER BY total DESC`:** Ordena a grelha final de resultados de forma decrescente (do maior total para o menor).
+
+```
+
