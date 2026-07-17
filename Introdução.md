@@ -1,7 +1,3 @@
-Seu material já está muito bom — só organizei, corrigi pequenos pontos de Markdown e deixei consistente para uso direto no GitHub.
-
-***
-
 ```md
 # SQL: Explorando a Linguagem de Consulta de Banco de Dados
 
