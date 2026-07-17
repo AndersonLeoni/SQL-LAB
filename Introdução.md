@@ -1,4 +1,4 @@
-```md
+
 # SQL: Explorando a Linguagem de Consulta de Banco de Dados
 
 Uma visão técnica e estruturada sobre SQL (Structured Query Language), abrangendo conceitos fundamentais, Sistemas Gerenciadores de Banco de Dados (SGBDs) e as subdivisões da linguagem (DDL, DML, DCL, DQL).
