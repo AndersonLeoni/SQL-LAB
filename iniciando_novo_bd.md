@@ -683,5 +683,255 @@ Ao escolher o tipo da PK:
 ---
 
 ---
+# Adicionando Constraints no Banco de Dados
+
+Constraints são regras aplicadas às colunas ou tabelas para garantir integridade, consistência e validade dos dados armazenados. Elas podem ser definidas no momento da criação da tabela com `CREATE TABLE` ou adicionadas depois com `ALTER TABLE` [1][2].
+
+## Tipos principais de constraints
+
+Os tipos mais comuns de constraints em SQL são `NOT NULL`, `PRIMARY KEY`, `UNIQUE`, `FOREIGN KEY`, `CHECK` e `DEFAULT`. Cada uma tem a função de restringir ou validar os dados de uma forma específica, ajudando a manter o banco coerente com as regras do sistema [3][4].
+
+## NOT NULL
+
+A constraint `NOT NULL` impede que uma coluna receba valor nulo, tornando o preenchimento obrigatório. Ela é usada quando determinado atributo sempre precisa existir no registro [3][4].
+
+### Exemplo
+
+```sql
+CREATE TABLE employee (
+    ssn     CHAR(9) NOT NULL,
+    fname   VARCHAR(15) NOT NULL,
+    lname   VARCHAR(15) NOT NULL,
+    salary  DECIMAL(10,2) NOT NULL
+);
+```
+
+Nesse exemplo, `ssn`, `fname`, `lname` e `salary` obrigatoriamente precisam receber um valor no momento da inserção.
+
+***
+
+## PRIMARY KEY
+
+A `PRIMARY KEY` identifica de forma única cada linha da tabela. Ela não permite valores duplicados nem valores nulos, funcionando como o identificador principal do registro [1][3][5].
+
+### Exemplo de chave primária simples
+
+```sql
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL
+);
+```
+
+### Exemplo de chave primária composta
+
+```sql
+CREATE TABLE works_on (
+    essn  CHAR(9) NOT NULL,
+    pno   INT NOT NULL,
+    hours DECIMAL(3,1) NOT NULL,
+    PRIMARY KEY (essn, pno)
+);
+```
+
+No segundo caso, a combinação entre `essn` e `pno` deve ser única. Isso significa que o mesmo funcionário não pode aparecer duas vezes no mesmo projeto [1][5].
+
+***
+
+## UNIQUE
+
+A constraint `UNIQUE` impede a repetição de valores em uma coluna ou conjunto de colunas. Ela é útil quando um campo precisa ser exclusivo, mas não necessariamente é a chave primária da tabela [3][4].
+
+### Exemplo
+
+```sql
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL UNIQUE
+);
+```
+
+Nesse caso, dois departamentos não podem ter o mesmo nome.
+
+***
+
+## FOREIGN KEY
+
+A `FOREIGN KEY` estabelece uma relação entre duas tabelas. Ela garante que o valor inserido na tabela filha exista previamente na tabela pai, preservando a integridade referencial [6][5].
+
+### Exemplo
+
+```sql
+CREATE TABLE employee (
+    ssn   CHAR(9) PRIMARY KEY,
+    fname VARCHAR(15) NOT NULL,
+    lname VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL UNIQUE,
+    mgr_ssn CHAR(9),
+    FOREIGN KEY (mgr_ssn) REFERENCES employee(ssn)
+);
+```
+
+Nesse modelo, o valor de `mgr_ssn` só será aceito se já existir na coluna `ssn` da tabela `employee` [6][5].
+
+***
+
+## CHECK
+
+A constraint `CHECK` valida uma condição lógica antes de aceitar o valor. Ela é usada para limitar o domínio dos dados, como faixa de idade, salário positivo ou coerência entre datas [1][2][4].
+
+### Exemplo com salário
+
+```sql
+CREATE TABLE employee (
+    ssn    CHAR(9) PRIMARY KEY,
+    fname  VARCHAR(15) NOT NULL,
+    salary DECIMAL(10,2),
+    CONSTRAINT chk_salary CHECK (salary >= 0)
+);
+```
+
+Esse exemplo impede que um salário negativo seja armazenado [1][4].
+
+### Exemplo com datas
+
+```sql
+CREATE TABLE departament (
+    dnumber           INT PRIMARY KEY,
+    dname             VARCHAR(15) NOT NULL UNIQUE,
+    dept_create_date  DATE,
+    mgr_start_date    DATE,
+    CONSTRAINT chk_dates CHECK (dept_create_date <= mgr_start_date)
+);
+```
+
+Essa regra garante que a data de criação do departamento não seja posterior à data de início do gerente.
+
+***
+
+## DEFAULT
+
+A constraint `DEFAULT` define um valor padrão para a coluna quando nenhum valor é informado na inserção. Isso é útil para estados iniciais, datas automáticas e comportamentos esperados do sistema [3][4].
+
+### Exemplo
+
+```sql
+CREATE TABLE employee (
+    ssn    CHAR(9) PRIMARY KEY,
+    fname  VARCHAR(15) NOT NULL,
+    status VARCHAR(10) DEFAULT 'ATIVO'
+);
+```
+
+Se o campo `status` não for informado no `INSERT`, o banco preencherá automaticamente com `ATIVO`.
+
+***
+
+## Adicionando constraints com ALTER TABLE
+
+Além de criar constraints diretamente no `CREATE TABLE`, também é possível adicioná-las depois que a tabela já existe usando `ALTER TABLE` [2][7][8].
+
+### Exemplos
+
+```sql
+ALTER TABLE employee
+ADD CONSTRAINT pk_employee PRIMARY KEY (ssn);
+```
+
+```sql
+ALTER TABLE employee
+ADD CONSTRAINT chk_salary_positive CHECK (salary >= 0);
+```
+
+```sql
+ALTER TABLE departament
+ADD CONSTRAINT fk_departament_mgr
+FOREIGN KEY (mgr_ssn) REFERENCES employee(ssn);
+```
+
+Esse padrão facilita a manutenção do banco, especialmente quando a modelagem evolui com o tempo [2][9][8].
+
+***
+
+## Ações referenciais
+
+Ao trabalhar com `FOREIGN KEY`, também é possível definir o comportamento do banco em operações de exclusão ou atualização na tabela pai. As opções mais comuns são `ON DELETE CASCADE`, `ON DELETE SET NULL` e `ON UPDATE CASCADE` [10][11][12].
+
+### Exemplo com CASCADE
+
+```sql
+CREATE TABLE project (
+    pnumber INT PRIMARY KEY,
+    pname   VARCHAR(15) NOT NULL UNIQUE,
+    dnum    INT NOT NULL,
+    FOREIGN KEY (dnum)
+        REFERENCES departament(dnumber)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+```
+
+Nesse caso, se o departamento pai for excluído, os projetos associados também serão removidos automaticamente [10][12].
+
+### Exemplo com SET NULL
+
+```sql
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL UNIQUE,
+    mgr_ssn CHAR(9),
+    FOREIGN KEY (mgr_ssn)
+        REFERENCES employee(ssn)
+        ON DELETE SET NULL
+);
+```
+
+Aqui, se o funcionário gerente for removido, o campo `mgr_ssn` do departamento passa a ser `NULL`, preservando o departamento [10][11].
+
+***
+
+## Boas práticas
+
+Ao modelar tabelas, é recomendado nomear constraints explicitamente com `CONSTRAINT nome_regra`, porque isso facilita manutenção, leitura e remoção futura das regras [2][9].
+
+Algumas boas práticas comuns:
+
+- Usar `PRIMARY KEY` para identificar registros.
+- Usar `FOREIGN KEY` para relacionamentos.
+- Usar `NOT NULL` em campos obrigatórios.
+- Usar `UNIQUE` em atributos que não podem se repetir.
+- Usar `CHECK` para regras de negócio.
+- Usar `DEFAULT` para valores iniciais previsíveis.
+
+***
+
+## Exemplo completo
+
+```sql
+CREATE TABLE employee (
+    ssn        CHAR(9) NOT NULL,
+    fname      VARCHAR(15) NOT NULL,
+    lname      VARCHAR(15) NOT NULL,
+    salary     DECIMAL(10,2) DEFAULT 0,
+    dept_id    INT,
+    CONSTRAINT pk_employee PRIMARY KEY (ssn),
+    CONSTRAINT chk_salary CHECK (salary >= 0)
+);
+
+CREATE TABLE departament (
+    dnumber INT NOT NULL,
+    dname   VARCHAR(15) NOT NULL,
+    mgr_ssn CHAR(9),
+    CONSTRAINT pk_departament PRIMARY KEY (dnumber),
+    CONSTRAINT unq_departament_name UNIQUE (dname),
+    CONSTRAINT fk_departament_mgr FOREIGN KEY (mgr_ssn)
+        REFERENCES employee(ssn)
+        ON DELETE SET NULL
+);
+```
 
 
