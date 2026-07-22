@@ -473,6 +473,215 @@ Exemplo:
 CONSTRAINT chk_salary CHECK (salary >= 0)
 ```
 
+uso de consultas (`SELECT`) e inserções (`INSERT`) em SQL, com foco em duplicações, operadores e sintaxe básica de DML.
+
+---
+
+## 1. Comportamento: Multiset e Duplicações
+
+Em teoria de conjuntos, um **set** não admite elementos duplicados.  
+Já uma tabela SQL funciona, na prática, como um **multiset**: ela pode conter linhas repetidas, ou seja, duplicações de dados [web:19].
+
+- **Duplicações (redundâncias)**:
+  - Podem ser custosas, ocupando mais espaço e dificultando análises.
+  - Podem ser intencionais em alguns cenários (por exemplo, logs, histórico de eventos).
+
+Exemplo de consulta que pode retornar duplicatas:
+
+```sql
+SELECT salary
+FROM employee;
+```
+
+Se vários funcionários têm o mesmo salário, ele aparecerá repetido no resultado.
+
+Para remover duplicatas na visualização:
+
+```sql
+SELECT DISTINCT salary
+FROM employee;
+```
+
+`DISTINCT` não altera a tabela, apenas o **resultado da consulta**, retornando valores únicos [web:16][web:20][web:23].
+
+---
+
+## 2. Mapeamento de Consultas (SELECT)
+
+Forma geral de uma consulta simples:
+
+```sql
+SELECT <lista_de_atributos>
+FROM <tabela>
+WHERE <condição>;
+```
+
+- `SELECT`: define quais colunas serão projetadas (exibidas).
+- `FROM`: indica de qual tabela virão os dados.
+- `WHERE`: filtra linhas com base em uma condição lógica [web:24][web:21].
+
+### Exemplo prático
+
+```sql
+SELECT bdate, address
+FROM employee
+WHERE fname = 'John'
+  AND minit = 'B'
+  AND lname = 'Smith';
+```
+
+Nesta consulta:
+
+- Retornamos apenas `bdate` e `address`.
+- Filtramos um funcionário específico pelo conjunto de atributos (`fname`, `minit`, `lname`).
+
+---
+
+## 3. Projeção de Atributos
+
+**Projeção** é o ato de escolher quais colunas aparecerão no resultado.
+
+- Ao invés de buscar todas as colunas, escolhemos apenas o necessário.
+- Isso reduz custo de leitura e torna o resultado mais focado.
+
+Exemplos:
+
+```sql
+-- Projeção específica
+SELECT fname, lname
+FROM employee;
+
+-- Todas as colunas (projeção completa)
+SELECT *
+FROM employee;
+```
+
+---
+
+## 4. Operadores em SQL
+
+### 4.1. Operadores de comparação
+
+- `=`  (igual)
+- `<`  (menor)
+- `<=` (menor ou igual)
+- `>`  (maior)
+- `>=` (maior ou igual)
+- `<>` ou `!=` (diferente)
+
+Exemplo:
+
+```sql
+WHERE salary >= 3000
+  AND salary <> 0;
+```
+
+---
+
+### 4.2. Operadores aritméticos
+
+- `+` soma
+- `-` subtração
+- `*` multiplicação
+- `/` divisão
+
+Exemplo:
+
+```sql
+SELECT fname, lname, salary, salary * 1.10 AS salary_with_raise
+FROM employee;
+```
+
+---
+
+### 4.3. Operadores lógicos
+
+- `AND`: todas as condições devem ser verdadeiras.
+- `OR`: pelo menos uma condição deve ser verdadeira.
+- `NOT`: nega uma condição.
+- Alguns bancos suportam `XOR` para exclusão lógica (uma condição verdadeira, outra falsa).
+
+Exemplo:
+
+```sql
+WHERE (sexo = 'M' OR sexo = 'F')
+  AND NOT (salary < 0);
+```
+
+Valores lógicos avaliados: `TRUE`, `FALSE`.
+
+---
+
+## 5. DML: Data Manipulation Language
+
+A **DML** é o subconjunto de SQL mais usado no dia a dia.  
+Ela é responsável por manipular linhas dentro das tabelas [web:24][web:28].
+
+Principais comandos:
+
+- `INSERT`: inserir registros.
+- `UPDATE`: atualizar registros.
+- `DELETE`: remover registros.
+
+---
+
+## 6. Comando INSERT
+
+Forma básica:
+
+```sql
+INSERT INTO <table> (<lista_atributos>)
+VALUES (<lista_valores>);
+```
+
+Regra importante:
+
+- A quantidade de colunas na lista de atributos deve ser igual à quantidade de valores.
+- Os tipos de dados dos valores devem ser compatíveis com os tipos das colunas [web:28].
+
+### Exemplo
+
+```sql
+INSERT INTO employee (
+    fname, minit, lname, ssn, bdate, address, sexo, salary, super_ssn, dno
+) VALUES (
+    'John', 'B', 'Smith', '123456789', '1985-01-15',
+    'Rua Exemplo, 123', 'M', 3500.00, '987654321', 5
+);
+```
+
+---
+
+## 7. Valores de PK e Tipos Inteiros
+
+Para colunas que são **chave primária** numérica, é comum usar:
+
+- `SMALLINT UNSIGNED`
+- `INT`
+- `BIGINT` [web:18][web:22].
+
+No MySQL:
+
+- `SMALLINT UNSIGNED`: até 65.535.
+- `INT`: até aproximadamente 4 bilhões (quando UNSIGNED).
+- `BIGINT`: faixa muito maior, útil para IDs globais [web:22].
+
+Exemplo de definição de PK numérica:
+
+```sql
+CREATE TABLE departament (
+    dnumber INT UNSIGNED PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL UNIQUE
+);
+```
+
+Ao escolher o tipo da PK:
+
+- Pense na quantidade máxima de registros que aquela tabela pode ter.
+- Use `UNSIGNED` quando não faz sentido ter valores negativos (ex.: códigos, IDs) [web:22][web:18].
+
+---
+
 ---
 
 
