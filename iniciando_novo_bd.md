@@ -934,4 +934,301 @@ CREATE TABLE departament (
 );
 ```
 
+# Constraints com ALTER TABLE
+
+Este material explica como adicionar e remover constraints em tabelas já existentes usando `ALTER TABLE`, além de mostrar o funcionamento de `ON DELETE CASCADE` e `ON UPDATE CASCADE` em chaves estrangeiras [1][2][3].
+
+***
+
+## O que é ALTER TABLE
+
+O comando `ALTER TABLE` é usado para modificar a estrutura de uma tabela já criada. Com ele, é possível adicionar, remover ou recriar constraints sem precisar apagar a tabela inteira [1][4][3].
+
+Sintaxe geral:
+
+```sql
+ALTER TABLE nome_tabela
+acao;
+```
+
+***
+
+## ADD CONSTRAINT
+
+`ADD CONSTRAINT` serve para adicionar uma nova regra de integridade a uma tabela já existente. Esse comando é útil quando a tabela foi criada inicialmente sem todas as restrições, ou quando novas regras de negócio surgem depois [1][5][6].
+
+### Exemplo com PRIMARY KEY
+
+```sql
+ALTER TABLE employee
+ADD CONSTRAINT pk_employee PRIMARY KEY (ssn);
+```
+
+Esse comando define `ssn` como chave primária da tabela `employee`.
+
+### Exemplo com UNIQUE
+
+```sql
+ALTER TABLE departament
+ADD CONSTRAINT unq_departament_name UNIQUE (dname);
+```
+
+Agora o nome do departamento não pode se repetir.
+
+### Exemplo com CHECK
+
+```sql
+ALTER TABLE employee
+ADD CONSTRAINT chk_salary_positive CHECK (salary >= 0);
+```
+
+Essa constraint impede que salários negativos sejam armazenados [7][1].
+
+### Exemplo com FOREIGN KEY
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber);
+```
+
+Com isso, cada `dnum` inserido em `project` precisa existir antes em `departament(dnumber)` [2][3].
+
+***
+
+## DROP CONSTRAINT
+
+`DROP CONSTRAINT` é usado para remover uma constraint existente. Em muitos casos, quando se deseja “alterar” uma constraint, o procedimento real é remover a antiga e criar outra com a nova definição [1][8][3].
+
+### Exemplo genérico
+
+```sql
+ALTER TABLE employee
+DROP CONSTRAINT chk_salary_positive;
+```
+
+Esse padrão é válido em vários SGBDs, mas no MySQL algumas constraints usam comandos específicos, dependendo do tipo [1][2][9].
+
+***
+
+## DROP de constraints no MySQL
+
+No MySQL, a remoção pode variar conforme o tipo de constraint [1][2][9].
+
+### Remover PRIMARY KEY
+
+```sql
+ALTER TABLE employee
+DROP PRIMARY KEY;
+```
+
+### Remover FOREIGN KEY
+
+```sql
+ALTER TABLE project
+DROP FOREIGN KEY fk_project_departament;
+```
+
+### Remover índice UNIQUE
+
+Em MySQL, a constraint `UNIQUE` normalmente está associada a um índice único, então a remoção costuma ser feita com `DROP INDEX` [9].
+
+```sql
+ALTER TABLE departament
+DROP INDEX unq_departament_name;
+```
+
+### Remover CHECK
+
+```sql
+ALTER TABLE employee
+DROP CONSTRAINT chk_salary_positive;
+```
+
+Dependendo da versão do MySQL, esse comando pode ser aceito diretamente para `CHECK` [1].
+
+***
+
+## Estratégia comum: drop + add
+
+Em SQL, normalmente não se “edita” uma constraint já pronta. O mais comum é remover a constraint antiga e adicionar outra com a nova regra [3].
+
+### Exemplo prático
+
+Suponha que a foreign key de `project` foi criada sem `CASCADE`, mas depois você quer ativar esse comportamento.
+
+Primeiro remove a antiga:
+
+```sql
+ALTER TABLE project
+DROP FOREIGN KEY fk_project_departament;
+```
+
+Depois recria com a nova regra:
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+```
+
+Esse processo é muito comum em manutenção de banco [2][3].
+
+***
+
+## O que é CASCADE
+
+`CASCADE` é uma ação referencial usada em `FOREIGN KEY` para propagar automaticamente alterações da tabela pai para a tabela filha. Isso evita registros órfãos e mantém a integridade referencial sem intervenção manual [10][11][12].
+
+As duas formas mais comuns são:
+
+- `ON DELETE CASCADE`
+- `ON UPDATE CASCADE`
+
+***
+
+## ON DELETE CASCADE
+
+`ON DELETE CASCADE` significa que, se um registro da tabela pai for removido, todos os registros relacionados da tabela filha também serão removidos automaticamente [13][11][14].
+
+### Exemplo
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber)
+ON DELETE CASCADE;
+```
+
+### Como funciona
+
+Imagine os dados:
+
+- Departamento 10 existe em `departament`
+- Projetos A e B pertencem ao departamento 10 em `project`
+
+Se o departamento 10 for apagado, os projetos A e B também serão apagados automaticamente [13][14].
+
+### Quando usar
+
+Use `ON DELETE CASCADE` quando os registros filhos não fazem sentido sem o registro pai.
+
+Exemplos:
+
+- Itens de pedido em relação ao pedido.
+- Dependentes em relação ao funcionário.
+- Projetos que só existem vinculados a um departamento.
+
+***
+
+## ON UPDATE CASCADE
+
+`ON UPDATE CASCADE` significa que, se o valor da chave referenciada na tabela pai for alterado, os valores correspondentes na tabela filha também serão atualizados automaticamente [15][11][12].
+
+### Exemplo
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber)
+ON UPDATE CASCADE;
+```
+
+### Como funciona
+
+Imagine que `departament.dnumber = 10` e existem projetos em `project` com `dnum = 10`.
+
+Se o valor do departamento mudar de 10 para 20, o banco atualiza automaticamente todos os `dnum` relacionados de 10 para 20 [15][12].
+
+### Quando usar
+
+Use `ON UPDATE CASCADE` quando a chave da tabela pai pode mudar e você quer manter o relacionamento consistente sem atualizar tudo manualmente.
+
+Na prática, como chaves primárias quase sempre são estáveis, `ON UPDATE CASCADE` é menos usado que `ON DELETE CASCADE`, mas ainda é importante em alguns modelos [10][12].
+
+***
+
+## Exemplo completo com ADD CONSTRAINT e CASCADE
+
+```sql
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL UNIQUE
+);
+
+CREATE TABLE project (
+    pnumber INT PRIMARY KEY,
+    pname   VARCHAR(15) NOT NULL,
+    dnum    INT NOT NULL
+);
+```
+
+Agora adicionando a foreign key depois:
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+```
+
+Esse exemplo mostra bem a lógica do `ALTER TABLE`: a tabela já existe, e depois a constraint é adicionada com comportamento referencial completo [1][2][3].
+
+***
+
+## Exemplo completo com DROP e recriação
+
+```sql
+ALTER TABLE project
+DROP FOREIGN KEY fk_project_departament;
+```
+
+```sql
+ALTER TABLE project
+ADD CONSTRAINT fk_project_departament
+FOREIGN KEY (dnum) REFERENCES departament(dnumber)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+```
+
+Esse padrão é o mais usado quando se quer trocar a regra de uma foreign key já existente [2][3].
+
+***
+
+## Resumo prático
+
+### Para adicionar constraints
+
+```sql
+ALTER TABLE nome_tabela
+ADD CONSTRAINT nome_constraint definicao_constraint;
+```
+
+### Para remover constraints
+
+```sql
+ALTER TABLE nome_tabela
+DROP CONSTRAINT nome_constraint;
+```
+
+### Casos específicos no MySQL
+
+```sql
+ALTER TABLE employee DROP PRIMARY KEY;
+ALTER TABLE project DROP FOREIGN KEY fk_project_departament;
+ALTER TABLE departament DROP INDEX unq_departament_name;
+```
+
+***
+
+## Boas práticas
+
+- Nomear as constraints (`pk_`, `fk_`, `chk_`, `unq_`) facilita manutenção [5][6].
+- Antes de adicionar uma constraint, verificar se os dados atuais já obedecem à regra.
+- Antes de usar `ON DELETE CASCADE`, confirmar se a exclusão automática de dados filhos realmente faz sentido no sistema [10][11].
+- Em alterações de produção, é comum remover e recriar constraints para mudar comportamento referencial [3].
+
 
