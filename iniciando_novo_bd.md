@@ -1232,3 +1232,196 @@ ALTER TABLE departament DROP INDEX unq_departament_name;
 - Em alterações de produção, é comum remover e recriar constraints para mudar comportamento referencial [3].
 
 
+# Persistência de Dados em SQL
+
+Persistência de dados é o processo de armazenar informações de forma permanente ou duradoura em um banco de dados, para que elas continuem existindo mesmo depois que o sistema, aplicação ou sessão do usuário seja encerrada. Em bancos relacionais, essa persistência acontece principalmente por meio de comandos SQL de manipulação de dados, como `INSERT`, `UPDATE` e `DELETE`, que gravam mudanças nas tabelas do banco [1][2].
+
+***
+
+## O que significa persistir dados
+
+Persistir dados significa registrar informações no banco para que possam ser consultadas, alteradas ou reutilizadas futuramente. Diferente de um dado mantido apenas em memória temporária, o dado persistido permanece salvo na estrutura física do banco de dados [1][2].
+
+Exemplo prático:
+
+- Um usuário preenche um formulário de cadastro.
+- A aplicação envia os dados ao banco.
+- O banco grava essas informações em uma tabela.
+- Depois, esses dados podem ser recuperados por uma consulta `SELECT`.
+
+***
+
+## Inserção de dados no banco
+
+A forma mais comum de persistir novos dados em SQL é usando o comando `INSERT INTO`. Esse comando adiciona uma nova linha em uma tabela, respeitando a ordem das colunas, os tipos de dados e as constraints definidas na estrutura [3][4][5].
+
+### Sintaxe com todas as colunas
+
+```sql
+INSERT INTO nome_tabela
+VALUES (valor1, valor2, valor3);
+```
+
+Essa forma só é segura quando a ordem dos valores corresponde exatamente à ordem das colunas da tabela [3][4].
+
+### Sintaxe recomendada
+
+```sql
+INSERT INTO nome_tabela (coluna1, coluna2, coluna3)
+VALUES (valor1, valor2, valor3);
+```
+
+Essa é a forma mais indicada, porque deixa explícito quais colunas receberão quais valores [3][5].
+
+***
+
+## Selecionando o banco correto
+
+Antes de persistir dados, é importante garantir que o comando será executado na base correta. No MySQL, isso pode ser feito com `USE nome_do_banco` [6][7].
+
+### Exemplo
+
+```sql
+USE company;
+SHOW TABLES;
+```
+
+- `USE company;` seleciona o banco ativo.
+- `SHOW TABLES;` lista as tabelas existentes e ajuda a validar se você está no schema certo [6][7].
+
+> Observação: o comando correto é `SHOW TABLES;` e não `SHOW TABLAS;`.
+
+***
+
+## Exemplo básico de persistência
+
+Suponha a seguinte tabela:
+
+```sql
+CREATE TABLE employee (
+    ssn     CHAR(9) PRIMARY KEY,
+    fname   VARCHAR(15) NOT NULL,
+    lname   VARCHAR(15) NOT NULL,
+    bdate   DATE,
+    address VARCHAR(30)
+);
+```
+
+Agora, inserindo um registro:
+
+```sql
+INSERT INTO employee (ssn, fname, lname, bdate, address)
+VALUES ('123456789', 'John', 'Smith', '1985-01-15', 'Rua Central, 100');
+```
+
+Nesse momento, os dados passam a existir no banco e podem ser recuperados por futuras consultas.
+
+***
+
+## Uso de NULL
+
+Quando um dado não for preenchido, em muitos casos é possível utilizar `NULL`, desde que a coluna não tenha a constraint `NOT NULL`. Em SQL, `NULL` representa ausência de valor, valor desconhecido ou informação ainda não disponível, e não deve ser confundido com zero ou string vazia [8][9][10].
+
+### Exemplo com NULL explícito
+
+```sql
+INSERT INTO employee (ssn, fname, lname, bdate, address)
+VALUES ('987654321', 'Maria', 'Souza', NULL, NULL);
+```
+
+Nesse caso:
+
+- `bdate` não foi informada.
+- `address` não foi informada.
+- O banco aceita a inserção porque essas colunas não são obrigatórias.
+
+### Exemplo omitindo colunas opcionais
+
+```sql
+INSERT INTO employee (ssn, fname, lname)
+VALUES ('111222333', 'Ana', 'Lima');
+```
+
+Se as colunas omitidas permitirem `NULL` e não tiverem `DEFAULT`, elas receberão `NULL` automaticamente [8][4].
+
+***
+
+## Quando NULL não pode ser usado
+
+Se uma coluna foi criada com `NOT NULL`, ela precisa obrigatoriamente receber um valor válido no `INSERT`. Caso contrário, o banco rejeita a operação [10].
+
+### Exemplo
+
+```sql
+CREATE TABLE departament (
+    dnumber INT PRIMARY KEY,
+    dname   VARCHAR(15) NOT NULL
+);
+```
+
+Tentativa inválida:
+
+```sql
+INSERT INTO departament (dnumber, dname)
+VALUES (10, NULL);
+```
+
+Esse comando falha porque `dname` é obrigatório [10].
+
+***
+
+## Persistência e integridade dos dados
+
+Persistir dados não significa apenas gravar qualquer valor, mas gravar valores válidos segundo a modelagem do banco. Por isso, durante a inserção, o banco verifica regras como `PRIMARY KEY`, `FOREIGN KEY`, `NOT NULL`, `UNIQUE`, `CHECK` e `DEFAULT` antes de confirmar a gravação [2][10].
+
+### Exemplo com chave primária
+
+```sql
+CREATE TABLE project (
+    pnumber INT PRIMARY KEY,
+    pname   VARCHAR(15) NOT NULL
+);
+```
+
+Se o valor de `pnumber` já existir, a nova inserção será rejeitada porque a chave primária não pode se repetir [2].
+
+***
+
+## Boas práticas ao inserir dados
+
+Ao persistir dados em SQL, algumas práticas ajudam a evitar erros e melhorar a legibilidade do código:
+
+- Sempre selecionar o banco correto com `USE` antes de começar [6].
+- Validar as tabelas com `SHOW TABLES` [6][7].
+- Preferir `INSERT INTO tabela (colunas...) VALUES (...)` em vez de inserir valores sem informar colunas [3][5].
+- Verificar se colunas obrigatórias possuem `NOT NULL` [10].
+- Usar `NULL` apenas quando a ausência de valor faz sentido conceitualmente [8].
+- Confirmar se chaves primárias e estrangeiras respeitam a integridade do modelo [2].
+
+***
+
+## Exemplo completo
+
+```sql
+USE company;
+SHOW TABLES;
+
+INSERT INTO employee (ssn, fname, lname, bdate, address)
+VALUES ('123123123', 'Carlos', 'Silva', '1998-04-20', 'Av. Brasil, 500');
+
+INSERT INTO employee (ssn, fname, lname, bdate, address)
+VALUES ('456456456', 'Juliana', 'Costa', NULL, NULL);
+```
+
+### Interpretação
+
+- O banco `company` é ativado.
+- As tabelas são listadas para conferência.
+- O primeiro `INSERT` persiste um registro completo.
+- O segundo `INSERT` persiste um registro com campos opcionais nulos.
+
+***
+
+## Resumo conceitual
+
+Persistência de dados em SQL é o ato de gravar informações nas tabelas do banco para uso futuro. O comando mais básico para isso é o `INSERT INTO`, que adiciona linhas respeitando tipos de dados e constraints, enquanto `NULL` pode ser usado para campos não preenchidos desde que a modelagem permita [3][8][10].
