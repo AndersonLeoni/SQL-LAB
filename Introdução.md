@@ -509,4 +509,3 @@ WHERE e.dno = d.dnumber
 ## Resumo conceitual
 
 Em SQL, **nomes** identificam os objetos do banco, **aliases** criam nomes temporários para tabelas e colunas, e a **variação de tuplas** explica como cada alias representa as linhas de uma relação durante a execução da query. Esses conceitos são fundamentais para evitar ambiguidades, melhorar a legibilidade e entender consultas com múltiplas tabelas ou com auto-relacionamentos [1][2][3].
-
