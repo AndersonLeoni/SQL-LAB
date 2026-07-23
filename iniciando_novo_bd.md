@@ -1661,3 +1661,280 @@ Essa consulta usa mais de um critério para localizar o registro desejado.
 ## Resumo conceitual
 
 Recuperar dados em SQL significa consultar informações já armazenadas no banco utilizando queries. O comando central é o `SELECT`, que pode trazer todas as colunas com `*` ou apenas atributos específicos, enquanto a cláusula `WHERE` permite filtrar os registros com base em campos-chave ou outras condições [10][7][1].
+
+```md
+# Queries com Alias em SQL
+
+Aliases em SQL são apelidos temporários dados a colunas ou tabelas dentro de uma consulta. Eles deixam o código mais legível, ajudam a evitar ambiguidade de nomes e são indispensáveis em joins, subqueries e self joins.
+
+---
+
+## 1. Ideia geral de alias
+
+Um **alias** existe apenas durante a execução da query:
+
+- Não muda o nome real da tabela ou coluna no banco.
+- Serve para:
+  - encurtar nomes longos;
+  - dar nomes mais amigáveis para o resultado;
+  - diferenciar múltiplas referências à mesma tabela.
+
+### Sintaxe básica
+
+Alias de coluna:
+
+```sql
+SELECT coluna AS alias_coluna
+FROM tabela;
+```
+
+Alias de tabela:
+
+```sql
+SELECT t.coluna
+FROM tabela AS t;
+```
+
+Em muitos SGBDs, o `AS` é opcional, mas usá‑lo melhora a leitura:
+
+```sql
+SELECT t.coluna
+FROM tabela t;
+```
+
+---
+
+## 2. Queries com alias de coluna
+
+Alias de coluna renomeia a “etiqueta” exibida no resultado, sem alterar o nome da coluna na tabela.
+
+### Exemplo 1 — renomeando colunas
+
+```sql
+SELECT
+    fname AS primeiro_nome,
+    lname AS sobrenome,
+    salary AS salario
+FROM employee;
+```
+
+Saída (conceitualmente):
+
+| primeiro_nome | sobrenome | salario |
+|--------------|-----------|---------|
+| John         | Smith     | 3500.00 |
+| Maria        | Souza     | 4200.00 |
+
+### Exemplo 2 — alias em expressão calculada
+
+```sql
+SELECT
+    fname,
+    salary,
+    salary * 1.10 AS salario_com_bonus
+FROM employee;
+```
+
+Aqui, `salario_com_bonus` é o nome da coluna calculada no resultado.  
+Isso é útil para:
+
+- relatórios;
+- colunas derivadas (descontos, impostos, totais, etc.).
+
+### Exemplo 3 — alias “bonito” para relatório
+
+```sql
+SELECT
+    fname AS "Primeiro Nome",
+    lname AS "Sobrenome"
+FROM employee;
+```
+
+Alguns bancos exigem aspas (ou outro delimitador) quando o alias tem espaço.
+
+---
+
+## 3. Queries com alias de tabela
+
+Alias de tabela reduz o tamanho da query e organiza melhor joins.
+
+### Exemplo 4 — alias simples de tabela
+
+```sql
+SELECT e.fname, e.lname
+FROM employee AS e;
+```
+
+- `e` é um apelido para `employee`.
+- Em vez de `employee.fname`, usamos `e.fname`.
+
+### Exemplo 5 — alias em JOIN
+
+```sql
+SELECT
+    e.fname  AS funcionario,
+    d.dname  AS departamento
+FROM employee   AS e
+JOIN departament AS d
+    ON e.dno = d.dnumber;
+```
+
+Benefícios:
+
+- Query mais curta e fácil de ler.
+- Fica claro de qual tabela vem cada coluna.
+
+---
+
+## 4. Evitando ambiguidade com alias
+
+Quando duas tabelas têm colunas com o mesmo nome (ex.: `id`), é obrigatório qualificar com tabela/alias; caso contrário, a query fica ambígua.
+
+### Exemplo 6 — colunas com mesmo nome em tabelas diferentes
+
+```sql
+SELECT
+    c.id   AS id_cliente,
+    o.id   AS id_pedido,
+    c.nome AS nome_cliente
+FROM customers AS c
+JOIN orders    AS o
+    ON c.id = o.customer_id;
+```
+
+Sem alias, seria difícil saber de qual tabela vem cada `id`.  
+Com alias:
+
+- `c.id` → `customers.id`
+- `o.id` → `orders.id`
+
+---
+
+## 5. Self join com alias (mesma tabela 2 vezes)
+
+Em **self join**, a mesma tabela aparece duas vezes na mesma query; usar alias deixa de ser só recomendação e vira necessidade.
+
+### Exemplo 7 — funcionário e supervisor
+
+Suponha `super_ssn` guardando o SSN do supervisor:
+
+```sql
+SELECT
+    e.fname AS funcionario,
+    s.fname AS supervisor
+FROM employee AS e
+JOIN employee AS s
+    ON e.super_ssn = s.ssn;
+```
+
+- `e` representa a tupla do funcionário.
+- `s` representa a tupla do supervisor.
+- Ambas são da tabela `employee`, mas com papéis diferentes.
+
+Sem alias, o banco não conseguiria saber qual “lado” da tabela você está referenciando.
+
+---
+
+## 6. Alias em subqueries
+
+Aliases também são importantes em subqueries (subconsultas), onde você precisa nomear o resultado interno para usá‑lo na consulta externa.
+
+### Exemplo 8 — subquery com alias de tabela e coluna
+
+```sql
+SELECT
+    e.fname,
+    e.lname,
+    dept_info.total_funcionarios
+FROM employee AS e
+JOIN (
+    SELECT dno, COUNT(*) AS total_funcionarios
+    FROM employee
+    GROUP BY dno
+) AS dept_info
+    ON e.dno = dept_info.dno;
+```
+
+Aqui:
+
+- A subquery recebe o alias `dept_info`.
+- A coluna agregada `COUNT(*)` recebe o alias `total_funcionarios`.
+- A consulta externa pode usar `dept_info.dno` e `dept_info.total_funcionarios`.
+
+---
+
+## 7. Alias e ordenação (ORDER BY)
+
+Depois de criar um alias de coluna, normalmente você pode usá‑lo no `ORDER BY` em vez de repetir a expressão.
+
+### Exemplo 9 — usando alias no ORDER BY
+
+```sql
+SELECT
+    fname,
+    salary * 12 AS salario_anual
+FROM employee
+ORDER BY salario_anual DESC;
+```
+
+Melhor do que:
+
+```sql
+ORDER BY salary * 12 DESC;
+```
+
+Fica mais legível e evita repetir a expressão longa.
+
+---
+
+## 8. Boas práticas ao usar alias
+
+- Use `AS` para deixar explícito que se trata de um alias.
+- Use aliases curtos para tabelas (e, d, c, p…) e nomes descritivos para colunas.
+- Sempre use alias em:
+  - joins com várias tabelas;
+  - self joins;
+  - subqueries.
+- Use alias de coluna em:
+  - campos calculados;
+  - nomes técnicos que precisam ficar amigáveis em relatórios (por exemplo, para BI).
+
+---
+
+## 9. Exemplo completo de query com alias
+
+```sql
+SELECT
+    e.fname       AS funcionario,
+    e.lname       AS sobrenome,
+    d.dname       AS departamento,
+    s.fname       AS supervisor,
+    e.salary      AS salario,
+    e.salary * 1.10 AS salario_com_bonus
+FROM employee   AS e
+JOIN departament AS d
+    ON e.dno = d.dnumber
+LEFT JOIN employee AS s
+    ON e.super_ssn = s.ssn;
+```
+
+Nesta consulta:
+
+- `e` e `s` são aliases da mesma tabela `employee`, com papéis diferentes.
+- `d` é alias de `departament`.
+- As colunas recebem aliases amigáveis para saída.
+- A expressão `salary * 1.10` ganha um nome claro no resultado.
+
+---
+
+## 10. Resumo conceitual
+
+Realizar queries com alias em SQL significa atribuir apelidos temporários a tabelas e colunas para:
+
+- tornar o código mais legível;
+- evitar ambiguidade quando há nomes repetidos;
+- organizar joins, self joins e subqueries;
+- dar nomes claros a colunas calculadas.
+
+Os aliases só existem durante a execução daquela consulta e não alteram o esquema físico do banco.
+```
