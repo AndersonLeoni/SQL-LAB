@@ -1938,3 +1938,246 @@ Realizar queries com alias em SQL significa atribuir apelidos temporários a tab
 
 Os aliases só existem durante a execução daquela consulta e não alteram o esquema físico do banco.
 ```
+
+# When Good Statements Go Bad em SQL
+
+A expressão **“when good statements go bad”** descreve situações em que um comando SQL é sintaticamente correto e aparentemente “bonito”, mas produz resultados errados, inconsistentes ou ineficientes. Em outras palavras: a query roda, não dá erro, mas mente para você ou derruba a performance [cite:139][cite:142][cite:152].
+
+---
+
+## 1. Conceito central
+
+Um statement “bom que deu ruim” tem estas características:
+
+- A sintaxe está correta, o banco executa sem reclamar.
+- A intenção do desenvolvedor nem sempre casa com o resultado real.
+- Muitas vezes o problema só aparece em produção: mais dados, mais casos extremos, mais inconsistências [cite:139][cite:142].
+
+Isso acontece por:
+
+- lógica de negócio mal traduzida em SQL;
+- joins montados incorretamente;
+- má interpretação de `NULL`;
+- uso incorreto de agregações;
+- queries aparentemente inocentes que explodem o volume de linhas [cite:140][cite:144][cite:153].
+
+---
+
+## 2. Exemplo clássico: JOIN que “dobra” linhas
+
+Uma query de join pode parecer correta, mas gerar **linhas duplicadas** (ou “explosão” de linhas) quando existe uma relação muitos‑para‑muitos ou chaves não únicas [cite:140][cite:144][cite:153].
+
+### Exemplo
+
+```sql
+SELECT e.fname, p.pname
+FROM employee AS e
+JOIN project  AS p
+    ON e.dno = p.dnum;
+```
+
+Se:
+
+- um funcionário participa de vários projetos;
+- e um departamento tem vários projetos;
+
+você pode acabar com muito mais linhas do que esperava.  
+A query está “boa” sintaticamente, mas a modelagem/relacionamento faz com que o resultado seja enganoso [cite:140][cite:144].
+
+### Como perceber que “deu ruim”
+
+- Contagem de linhas muito maior que o número de funcionários ou projetos.
+- Totais financeiros aparentando “dobrar” ou “triplicar” sem sentido [cite:140][cite:153].
+
+### Estratégias de correção
+
+- Usar `DISTINCT` quando a intenção é só remover duplicatas do resultado imediato.
+- Reestruturar a query com `GROUP BY` e agregações corretas.
+- Verificar a cardinalidade do join e se as colunas usadas realmente identificam a relação de forma única [cite:140][cite:144][cite:153].
+
+---
+
+## 3. SELECT * que parece inofensivo
+
+`SELECT *` funciona e é extremamente comum, mas é um ótimo exemplo de “good statement” que pode dar problema:
+
+- traz colunas desnecessárias;
+- aumenta tráfego de dados e uso de memória;
+- torna a aplicação sensível a alterações na estrutura da tabela;
+- pode impactar negativamente performance em grandes volumes [cite:139][cite:142][cite:152].
+
+### Exemplo “bonito mas ruim”
+
+```sql
+SELECT *
+FROM employee;
+```
+
+Em ambiente pequeno, tudo bem. Em tabela com centenas de colunas e milhões de linhas, é caro e pouco controlado.
+
+### Melhor abordagem
+
+```sql
+SELECT fname, lname, salary
+FROM employee;
+```
+
+- Mais previsível, mais eficiente.
+- “Boa” tanto em correção quanto em qualidade [cite:139][cite:142].
+
+---
+
+## 4. Falta de WHERE em UPDATE/DELETE
+
+Outro caso clássico: o comando está perfeito, mas **sem filtro**, afetando todas as linhas da tabela.
+
+### Exemplo perigoso
+
+```sql
+DELETE FROM employee;
+```
+
+Sem `WHERE`, a instrução exclui todos os registros. Sintaticamente correto; semanticamente, possivelmente um desastre [cite:149].
+
+### Boas práticas
+
+- Sempre testar antes com um `SELECT` equivalente:
+
+```sql
+SELECT *
+FROM employee
+WHERE dno = 5;
+```
+
+Depois, aplicar o mesmo filtro no `UPDATE` ou `DELETE`:
+
+```sql
+DELETE FROM employee
+WHERE dno = 5;
+```
+
+Isso reduz muito a chance de “good statement” virar incidente grave [cite:149].
+
+---
+
+## 5. NULL e lógica booleana enganosa
+
+`NULL` em SQL significa “valor desconhecido” e não é igual a nada — nem a outro `NULL`. Comparações diretas com `=` ou `<>` podem gerar resultados inesperados [cite:64][cite:73].
+
+### Exemplo problemático
+
+```sql
+SELECT *
+FROM employee
+WHERE address = NULL;
+```
+
+Essa consulta nunca retorna linhas, porque `address = NULL` é sempre avaliado como **UNKNOWN**, não como TRUE [cite:64][cite:73].
+
+### Versão correta
+
+```sql
+SELECT *
+FROM employee
+WHERE address IS NULL;
+```
+
+A query original é “bonita” sintaticamente, mas logicamente incorreta.  
+Esse tipo de detalhe é fonte comum de statements que “passam” mas não entregam o que foi pedido [cite:64][cite:73][cite:149].
+
+---
+
+## 6. NOT IN com NULL na subquery
+
+Outro ponto em que uma query aparentemente correta pode “ir pro lado errado” é o uso de `NOT IN` com subqueries que retornam `NULL` [cite:149].
+
+### Exemplo
+
+```sql
+SELECT *
+FROM employee
+WHERE ssn NOT IN (
+    SELECT super_ssn FROM employee
+);
+```
+
+Se a subquery retorna algum `NULL`, a lógica de três valores do SQL pode fazer o resultado ser vazio ou enganoso, mesmo com sintaxe perfeita [cite:64][cite:73][cite:149].
+
+Melhor evitar esse padrão e preferir `NOT EXISTS` quando há risco de `NULL` na subquery.
+
+---
+
+## 7. Queries corretas, mas que matam performance
+
+Às vezes o problema não é semântica, mas performance. A query “funciona”, porém:
+
+- demora demais;
+- consome muitos recursos;
+- não escala com crescimento de dados [cite:139][cite:142][cite:152].
+
+### Exemplos típicos
+
+- Filtros em colunas sem índice, em tabelas muito grandes.
+- Uso excessivo de subqueries correlacionadas (executadas para cada linha).
+- Funções em colunas de filtro (`WHERE LOWER(col) = 'x'`), impedindo uso de índice.
+- Combinação de vários `OR` complexos em vez de reestruturar a lógica [cite:139][cite:142][cite:143][cite:152].
+
+Mesmo estando “certo”, esse tipo de statement vira um “good statement gone bad” em ambiente real.
+
+---
+
+## 8. Quando a modelagem é o problema
+
+Às vezes a query está até bem escrita, mas a **modelagem de dados** é que permite inconsistências: redundância de informações críticas, ausência de constraints de integridade, falta de normalização [cite:148].
+
+### Exemplo conceitual (baseado em Learning SQL)
+
+Se o nome do cliente estiver:
+
+- em `customer`;
+- e também em várias outras tabelas (pedidos, histórico, etc.);
+
+uma atualização de nome feita só em um lugar deixa o banco inconsistente [cite:148].  
+A query de relatório pode estar “certa” do ponto de vista sintático e lógico, mas retorna dados divergentes porque o modelo permite múltiplas fontes da mesma verdade.
+
+O “good statement” fica “bad” porque:
+
+- lê dados redundantes;
+- pega versões diferentes da mesma informação [cite:148].
+
+---
+
+## 9. Checklist mental para evitar que “deem ruim”
+
+Antes de confiar em uma query “bonita”, vale passar por um checklist rápido:
+
+1. **Entendimento da regra de negócio**  
+   - A query realmente traduz a pergunta que o negócio está fazendo?
+
+2. **Joins e cardinalidades**  
+   - O join pode multiplicar linhas?  
+   - As colunas usadas garantem unicidade quando necessário? [cite:140][cite:144][cite:153]
+
+3. **Uso de NULL**  
+   - Comparações com `IS NULL` / `IS NOT NULL`?  
+   - Algum `NOT IN` com possibilidade de `NULL`? [cite:64][cite:73][cite:149]
+
+4. **Filtros em operações de escrita**  
+   - `UPDATE` e `DELETE` com `WHERE` correto?  
+   - Já testou antes com um `SELECT` equivalente? [cite:149]
+
+5. **Performance básica**  
+   - Está evitando `SELECT *` em cenários críticos?  
+   - Filtros e joins usam colunas indexadas quando faz sentido? [cite:139][cite:142][cite:152]
+
+---
+
+## 10. Resumo conceitual
+
+“**When good statements go bad**” é um rótulo para queries SQL que:
+
+- são sintaticamente válidas;
+- muitas vezes até “elegantes”;
+- mas produzem resultados errados, duplicados, inconsistentes ou muito lentos.
+
+Os vilões mais comuns incluem joins mal definidos, uso ingênuo de `NULL`, falta de filtros em comandos de escrita, `SELECT *` indiscriminado, má modelagem e falta de atenção à performance. Escrever SQL “sem erro 
