@@ -1,6 +1,6 @@
 # Explorando Queries com SQL
 
-Este material detalha, em blocos, os principais tópicos que você listou: percurso lógico de estudo, comandos DDL, criação de expressões, operações de conjuntos (`UNION`, `INTERSECT`, `EXCEPT`) e nested queries, destacando também a diferença entre DDL e DML onde sua anotação se misturou.
+Este material detalha, em blocos, os principais tópicos que você listou: percurso lógico de estudo, comandos DDL, criação de expressões, operações de conjuntos (`UNION`, `INTERSECT`, `EXCEPT`) e nested queries, destacando também a diferença entre DDL e DML.
 
 ---
 
