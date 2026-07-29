@@ -1,7 +1,5 @@
 # Introdução a Operações de Comparação com SQL: LIKE e BETWEEN
 
-Esta continuação da sua anotação foca em duas operações de comparação muito usadas em SQL (incluindo MySQL): `LIKE` e `BETWEEN`. Elas permitem comparar valores persistidos de forma mais expressiva, usando caracteres especiais como `%` e `_` para padrões de texto.
-
 ---
 
 ## 1. LIKE – Comparando padrões em strings
