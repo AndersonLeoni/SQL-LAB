@@ -1,34 +1,25 @@
 # SQL-LAB
 
-Laboratório de estudos em SQL criado por Anderson Leoni.
+Laboratório de estudos criado para documentar minha evolução em SQL.
 
-Objetivo:
+## Objetivo
 
-Construir uma base sólida em SQL aplicada à:
+Construir uma base sólida em SQL aplicada à análise de sistemas, investigação de incidentes e projetos de dados.
 
-- investigação de problemas;
-- troubleshooting;
-- análise de dados;
-- tecnologia aplicada ao esporte.
+## Roadmap
 
----
+✅ Primeiros Passos com SQL
 
-## Roadmap Atual
+✅ Explorando Queries
 
-### Sprint 1
-- [ ] Primeiros passos com SQL
-- [ ] Explorando Queries
-- [ ] Manipulando Dados
+✅ Manipulando Dados
 
-### Sprint 2
-- [ ] Modelagem
-- [ ] Constraints e Procedures
+⬜ Modelando Banco de Dados na Prática
 
-### Sprint 3
-- [ ] SQL Database Specialist
+⬜ SQL Server Constraints, Funções e Procedures
 
----
+⬜ SQL Database Specialist
 
-## Próximo grande projeto
+## Próximo Projeto
 
-Performance Data
+Performance Dashboard
