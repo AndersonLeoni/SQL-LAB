@@ -1,0 +1,2 @@
+CREATE DATABASE performance_dashboard;
+USE performance_dashboard;
