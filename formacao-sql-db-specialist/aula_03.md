@@ -2,20 +2,20 @@
 
 ## Visão geral
 
-Os Sistemas Gerenciadores de Banco de Dados (SGBDs) surgiram para organizar dados de forma mais eficiente, reduzir custos e diminuir inconsistencias. Antes deles, os dados eram armazenados em sistemas de arquivos, com muitos problemas de redundÛncia, integridade e manutençº£o.
+Os Sistemas Gerenciadores de Banco de Dados (SGBDs) surgiram para organizar dados de forma mais eficiente, reduzir custos e diminuir inconsistências. Antes deles, os dados eram armazenados em sistemas de arquivos, com muitos problemas de redundância, integridade e manutenção.
 
-A evoluçº£o passou por modelos hierÚºrquicos, em rede e, finalmente, relacionais. O modelo relacional, proposto por Ted Codd em 1970, introduziu ÚÝ©lgebra relacional, tabelas e transparÛncia entre o modelo lÓ©gico e a forma fÝ©sica de armazenamento. Posteriormente, surgiram linguagens como SQL e produtos comerciais como Oracle, IBM SQL/DS e DB2.[web:98][web:110]
+A evolução passou por modelos hierárquicos, em rede e, finalmente, relacionais. O modelo relacional, proposto por Ted Codd em 1970, introduziu álgebra relacional, tabelas e transparência entre o modelo lógico e a forma física de armazenamento. Posteriormente, surgiram linguagens como SQL e produtos comerciais como Oracle, IBM SQL/DS e DB2.
 
 ## Como surgiram os SGBDs
 
 ### Contexto dos anos 1960
 
-Na dÉ©cada de 1960, os dados eram armazenados principalmente em sistemas de arquivos. Cada aplicaçº£o criava seus prÓ©prios arquivos, com estruturas prÓ©prias. Isso gerava:
+Na década de 1960, os dados eram armazenados principalmente em sistemas de arquivos. Cada aplicação criava seus próprios arquivos, com estruturas próprias. Isso gerava:
 
-- **InconsistÛncia de dados:** o mesmo dado podia aparecer em vÚºrios arquivos, com valores diferentes.
-- **Custo pessoal elevado:** muitas pessoas gastavam tempo corrigindo dados, reconciliando relatÓ©rios e mantendo cÓ©pias.
-- **Falta de padronizaçº£o:** nØ£o havia uma visØ£o ÚÛnica dos dados da organizaçº£o.
-- **Dificuldade de compartilhamento:** era complicado fazer vÚºrias aplicaçºµes usarem os mesmos dados de forma segura.
+- **Inconsistência de dados:** o mesmo dado podia aparecer em vários arquivos, com valores diferentes.
+- **Custo pessoal elevado:** muitas pessoas gastavam tempo corrigindo dados, reconciliando relatórios e mantendo cópias.
+- **Falta de padronização:** não havia uma visão única dos dados da organização.
+- **Dificuldade de compartilhamento:** era complicado fazer várias aplicações usarem os mesmos dados de forma segura.
 
 Esses problemas levaram ao desenvolvimento de modelos e sistemas que centralizassem o gerenciamento dos dados.
 
@@ -24,90 +24,90 @@ Esses problemas levaram ao desenvolvimento de modelos e sistemas que centralizas
 Os primeiros SGBDs buscavam:
 
 - Diminuir custos operacionais.
-- Reduzir redundÛncia e inconsistÛncia.
+- Reduzir redundância e inconsistência.
 - Centralizar o controle dos dados.
-- Facilitar a manutençº£o.
+- Facilitar a manutenção.
 - Oferecer acesso compartilhado e seguro.
 
 ## Modelos de dados
 
 ### Modelo baseado em sistema de arquivos
 
-Antes dos SGBDs, cada aplicaçº£o gerenciava seus prÓ©prios arquivos.
+Antes dos SGBDs, cada aplicação gerenciava seus próprios arquivos.
 
-**CaracterÝ©sticas:**
+**Características:**
 
-- Dados duplicados em vÚºrios arquivos.
-- Estrutura dependente da aplicaçº£o.
+- Dados duplicados em vários arquivos.
+- Estrutura dependente da aplicação.
 - Pouca ou nenhuma integridade entre arquivos.
 - Dificuldade para alterar estruturas.
-- Alto custo de manutençº£o.
+- Alto custo de manutenção.
 
-Esse modelo motivou a criaçº£o de modelos mais estruturados, como hierÚºrquico e em rede.
+Esse modelo motivou a criação de modelos mais estruturados, como o hierárquico e o modelo em rede.
 
-## Modelo HierÚºrquico
+## Modelo hierárquico
 
 ### Conceito
 
-O modelo hierÚºrquico organiza os dados em uma estrutura de ÚÝºrvore, com registros dispostos em nÝ©veis de pai e filho. Cada registro pode ter vÚºrios filhos, mas apenas um pai.
+O modelo hierárquico organiza os dados em uma estrutura de árvore, com registros dispostos em níveis de pai e filho. Cada registro pode ter vários filhos, mas apenas um pai.
 
-**CaracterÝ©sticas principais:**
+**Características principais:**
 
-- Estrutura em ÚÝºrvore com raiz.
+- Estrutura em árvore com raiz.
 - Relacionamento 1:N (um para muitos).
-- Navegaçº£o hierÚºrquica, do topo para baixo.
+- Navegação hierárquica, do topo para baixo.
 - Ponteiros entre registros pai e filho.
 - Eficiente para certas hierarquias naturais.
 
-### IMS - Information Management System
+### IMS — Information Management System
 
-O IMS, da IBM, Éa um dos principais exemplos de SGBD hierÚºrquico, lançººdo no final dos anos 1960. Foi desenvolvido inicialmente para o programa Apollo da NASA e depois amplamente usado em grandes empresas.[web:99][web:101][web:104]
+O IMS, da IBM, é um dos principais exemplos de SGBD hierárquico, lançado no final dos anos 1960. Foi desenvolvido inicialmente para o programa Apollo da NASA e depois amplamente utilizado em grandes empresas.
 
 **Estrutura do IMS:**
 
 - Registros compostos por segmentos.
-- Segmentos organizados em ÚÝºrvore.
+- Segmentos organizados em árvore.
 - Links entre segmentos pai e filho.
-- Navegaçº£o por percursos predefinidos.
+- Navegação por percursos predefinidos.
 
 ### Linguagens associadas
 
-Linguagens como COBOL, Clipper e FoxPro foram frequentemente usadas com bancos hierÚºrquicos e posteriores, em diferentes contextos.
+Linguagens como COBOL, Clipper e FoxPro foram frequentemente usadas com bancos hierárquicos e sistemas de arquivos, em diferentes contextos.
 
 ### Vantagens
 
 - Simples para hierarquias bem definidas.
-- Desempenho bom para percursos previsÝ©veis.
+- Bom desempenho para percursos previsíveis.
 - Adequado para estruturas como organogramas e listas de materiais.
 
 ### Desvantagens
 
 - Dificuldade para representar relacionamentos muitos-para-muitos.
-- RigidÊ©z na estrutura.
-- Alteraçºµes na hierarquia exigem mudançººs significativas.
-- Navegaçº£o complexa para consultas nØ£o hierÚºrquicas.
+- Rigidez na estrutura.
+- Alterações na hierarquia exigem mudanças significativas.
+- Navegação complexa para consultas não hierárquicas.
 
-## Modelo em Rede
+## Modelo em rede
 
 ### Conceito
 
-O modelo em rede surgiu como uma evoluçº£o do modelo hierÚºrquico, permitindo que um registro tivesse mais de um pai. Isso possibilitou representar relacionamentos mais complexos.
+O modelo em rede surgiu como uma evolução do modelo hierárquico, permitindo que um registro tivesse mais de um pai. Isso possibilitou representar relacionamentos mais complexos.
 
-**CaracterÝ©sticas principais:**
+**Características principais:**
 
-- Estrutura em grafo, nØ£o apenas ÚÝºrvore.
+- Estrutura em grafo, não apenas árvore.
 - Relacionamentos N:M (muitos para muitos).
-- Links como ponteiros entre nÓ©s.
-- Mais flexibilidade que o modelo hierÚºrquico.
+- Links como ponteiros entre nós.
+- Mais flexibilidade que o modelo hierárquico.
 
 ### CODASYL
 
-O padrØ£o CODASYL, definido em 1964, formalizou o modelo em rede. Ele estabeleceu:
+O padrão CODASYL, definido em 1964, formalizou o modelo em rede. Ele estabeleceu:
 
-- Definiçºµes de esquemas.
+- Definições de esquemas.
 - Tipos de registros.
 - Tipos de links.
-- Linguagem de manipulaçº£o de dados (DML) associada.[web:105][web:106][web:108]
+- Linguagem de manipulação de dados (DML) associada.
 
 **Elementos principais:**
 
@@ -118,53 +118,53 @@ O padrØ£o CODASYL, definido em 1964, formalizou o modelo em rede. Ele estabele
 ### Vantagens
 
 - Representa melhor relacionamentos complexos.
-- Mais flexibilidade que o modelo hierÚºrquico.
-- Permite mÚºltiplos caminhos de navegaçº£o.
+- É mais flexível que o modelo hierárquico.
+- Permite múltiplos caminhos de navegação.
 
 ### Desvantagens
 
-- Complexidade de programaçº£o.
-- DependÛncia de ponteiros e percursos.
-- Dificuldade de manutençº£o e evoluçº£o.
-- Pouca transparÛncia entre modelo lÓ©gico e fÝ©sico.
+- Complexidade de programação.
+- Dependência de ponteiros e percursos.
+- Dificuldade de manutenção e evolução.
+- Pouca transparência entre modelo lógico e físico.
 
-## Modelo Relacional
+## Modelo relacional
 
 ### Origem
 
-O modelo relacional foi proposto por **Edgar F. "Ted" Codd**, em 1970, no artigo *"A Relational Model of Data for Large Shared Data Banks"*. Codd, matemÚºtico da IBM, apresentou uma nova forma de organizar e acessar dados, baseada em relaçºµes, ÚÝ©lgebra relacional e cÚºlculo relacional.[web:98][web:110][web:111]
+O modelo relacional foi proposto por **Edgar F. “Ted” Codd**, em 1970, no artigo *A Relational Model of Data for Large Shared Data Banks*. Codd, matemático da IBM, apresentou uma nova forma de organizar e acessar dados, baseada em relações, álgebra relacional e cálculo relacional.
 
 **Principais ideias de Codd:**
 
-- Dados organizados em tabelas (relaçºµes).
-- Uso de ÚÝ©lgebra relacional para manipular dados.
-- Separaçº£o entre modelo lÓ©gico e estrutura fÝ©sica.
-- Acesso por linguagens de alto nÝ©vel.
-- TransparÛncia para o usuÚºrio.
+- Dados organizados em tabelas (relações).
+- Uso de álgebra relacional para manipular dados.
+- Separação entre modelo lógico e estrutura física.
+- Acesso por linguagens de alto nível.
+- Transparência para o usuário.
 
 ### System R e SQL
 
-Na dÉ©cada de 1970, a IBM desenvolveu o projeto **System R**, para demonstrar a viabilidade do modelo relacional. Nesse projeto foram criados:
+Na década de 1970, a IBM desenvolveu o projeto **System R**, para demonstrar a viabilidade do modelo relacional. Nesse projeto foram desenvolvidos:
 
-- SQL (inicialmente chamado SEQUEL).
-- Otimizaçº£o de consultas.
-- Mecanismos de transaçº£o e bloqueio.
-- Conceitos que influenciaram o padrØ£o ACID.[web:98][web:103][web:110]
+- SQL, inicialmente chamado SEQUEL.
+- Otimização de consultas.
+- Mecanismos de transação e bloqueio.
+- Conceitos que influenciaram o padrão ACID.
 
-A partir do System R, surgiram produtos comerciais:
+A partir do System R, surgiram produtos comerciais como:
 
 - **IBM SQL/DS** (1981).
 - **IBM DB2** (1983).
-- **Oracle**, lançº²do pela Relational Software em 1977, foi um dos primeiros SGBDs relacionais comerciais.[web:98][web:110]
+- **Oracle**, lançado pela Relational Software em 1977, um dos primeiros SGBDs relacionais comerciais.
 
-### CaracterÝ©sticas do modelo relacional
+### Características do modelo relacional
 
 - Dados organizados em tabelas.
 - Linhas representam registros.
 - Colunas representam atributos.
-- Relacionamentos por chaves primÚºrias e estrangeiras.
-- Uso de ÚÝ©lgebra relacional e cÚºlculo relacional.
-- Linguagem SQL para definiçº£o e manipulaçº£o.
+- Relacionamentos por chaves primárias e estrangeiras.
+- Uso de álgebra relacional e cálculo relacional.
+- Linguagem SQL para definição e manipulação.
 
 ### Exemplo de tabela
 
@@ -178,119 +178,119 @@ CREATE TABLE clientes (
 
 ### Vantagens
 
-- Separaçº£o entre lÓ©gico e fÝ©sico.
+- Separação entre modelo lógico e físico.
 - Flexibilidade para consultas.
 - Suporte a relacionamentos complexos.
-- Padronizaçº£o com SQL.
-- Melhor integridade e consistÛncia.
+- Padronização com SQL.
+- Melhor integridade e consistência.
 
 ### Desvantagens
 
-- Pode exigir mais recursos para certas operaçºµes.
+- Pode exigir mais recursos para certas operações.
 - Necessidade de modelagem cuidadosa.
-- Desempenho dependente de ÝØ³ndices e otimizaçº£o.
+- Desempenho dependente de índices e otimização.
 
-## Comparaçº£o entre modelos
+## Comparação entre modelos
 
-| CaracterÝ©stica | HierÚºrquico | Rede | Relacional |
+| Característica | Hierárquico | Rede | Relacional |
 |---|---|---|---|
-| Estrutura | ÚÝºrvore | Grafo | Tabelas |
-| Relacionamentos | 1:N | N:M | N:M (via chaves) |
-| Navegaçº£o | Por percursos hierÚºrquicos | Por ponteiros e conjuntos | Por consultas SQL |
-| Flexibilidade | Baixa | MÉ©dia | Alta |
-| TransparÛncia | Baixa | MÉ©dia | Alta |
-| Exemplos | IMS | CODASYL | Oracle, DB2, MySQL, SQL Server |
+| Estrutura | Árvore | Grafo | Tabelas |
+| Relacionamentos | 1:N | N:M | N:M por meio de chaves |
+| Navegação | Percursos hierárquicos | Ponteiros e conjuntos | Consultas SQL |
+| Flexibilidade | Baixa | Média | Alta |
+| Transparência | Baixa | Média | Alta |
+| Exemplos | IMS | CODASYL | Oracle, DB2, MySQL e SQL Server |
 
-## UsuÚºrios de bancos de dados
+## Usuários de bancos de dados
 
-### UsuÚºrio convencional
+### Usuário convencional
 
-O usuÚºrio convencional interage com o banco por meio de aplicaçºµes ou consultas.
+O usuário convencional interage com o banco por meio de aplicações ou consultas.
 
-**CaracterÝ©sticas:**
+**Características:**
 
-- Altera e extrai informaçºµes.
-- NØ£o precisa conhecer detalhes internos do SGBD.
-- Usa formulÚºrios, relatÓ©rios, telas e APIs.
+- Altera e extrai informações.
+- Não precisa conhecer os detalhes internos do SGBD.
+- Usa formulários, relatórios, telas e APIs.
 - Beneficia-se da durabilidade dos dados.
 
 ### Administrador de banco de dados (DBA)
 
-O DBA Éa responsÚºvel pela administraçº£o tÉ©cnica do banco.
+O DBA é responsável pela administração técnica do banco.
 
 **Atividades principais:**
 
-- Definiçº£o de tabelas e constraints.
-- Controle de acessos e permissÚµes.
-- Backup e recuperaçº£o.
+- Definição de tabelas e constraints.
+- Controle de acessos e permissões.
+- Backup e recuperação.
 - Monitoramento de desempenho.
 - Planejamento de capacidade.
-- Aplicaçº£o de patches e atualizaçºµes.
-- Garantia de integridade e segurançºº.
+- Aplicação de patches e atualizações.
+- Garantia de integridade e segurança.
 
 ### Processador de LDD
 
-O processador de Linguagem de Definiçº£o de Dados (LDD) interpreta comandos como:
+O processador de Linguagem de Definição de Dados (LDD) interpreta comandos como:
 
 - `CREATE TABLE`
 - `ALTER TABLE`
 - `DROP TABLE`
 - `CREATE INDEX`
 
-Esses comandos definem a estrutura do banco. O SGBD traduz essas definiçºµes em metadados e estruturas internas.
+Esses comandos definem a estrutura do banco. O SGBD traduz essas definições em metadados e estruturas internas.
 
 ## Componentes internos de um SGBD
 
 ### Gerenciador de armazenamento
 
-ResponsÚºvel por:
+Responsável por:
 
-- Alocar espaçºº em disco.
-- Organizar pÚºginas e blocos.
-- Gerenciar arquivos de dados e ÝØ³ndices.
-- Controlar acesso fÝ©sico aos dados.
+- Alocar espaço em disco.
+- Organizar páginas e blocos.
+- Gerenciar arquivos de dados e índices.
+- Controlar o acesso físico aos dados.
 
 ### Gerenciador de buffer
 
-ResponsÚºvel por:
+Responsável por:
 
-- Manter pÚºginas em memÓ©ria.
-- Reduzir acessos a disco.
-- Implementar polÝ©ticas de substituiçº£o.
-- Garantir consistÛncia entre memÓ©ria e disco.
+- Manter páginas em memória.
+- Reduzir acessos ao disco.
+- Implementar políticas de substituição.
+- Garantir consistência entre memória e disco.
 
 Esses componentes trabalham juntos para oferecer desempenho e durabilidade.
 
-## RepositÓ©rios centralizados e mediadores
+## Repositórios centralizados e mediadores
 
-### RepositÓ©rios centralizados
+### Repositórios centralizados
 
-Um repositÓ©rio centralizado concentra metadados e, em alguns casos, dados compartilhados.
+Um repositório centralizado concentra metadados e, em alguns casos, dados compartilhados.
 
-**CaracterÝ©sticas:**
+**Características:**
 
-- VisØ£o ÚÛnica dos dados.
+- Visão única dos dados.
 - Controle central de acesso.
-- Facilita governançºº e segurançºº.
-- Pode se tornar um ponto ÚÛnico de falha, se nØ£o houver redundÛncia.
+- Facilita governança e segurança.
+- Pode se tornar um ponto único de falha se não houver redundância.
 
 ### Mediadores
 
-Mediadores sØ£o camadas que ficam entre aplicaçºµes e fontes de dados.
+Mediadores são camadas que ficam entre aplicações e fontes de dados.
 
-**Funçºµes:**
+**Funções:**
 
 - Traduzir consultas.
-- Integrar mÚºltiplas fontes.
-- Aplicar regras de negÓ©cio.
-- Oferecer uma visØ£o unificada.
+- Integrar múltiplas fontes.
+- Aplicar regras de negócio.
+- Oferecer uma visão unificada.
 - Controlar acesso e auditoria.
 
-Essa arquitetura Éa comum em sistemas distribuíººdos e integraçºµes.
+Essa arquitetura é comum em sistemas distribuídos e integrações.
 
 ## Exemplos em SQL e MySQL
 
-### Criaçº£o de tabela no modelo relacional
+### Criação de tabela no modelo relacional
 
 ```sql
 CREATE TABLE clientes (
@@ -301,7 +301,7 @@ CREATE TABLE clientes (
 );
 ```
 
-### Inserçº£o de dados
+### Inserção de dados
 
 ```sql
 INSERT INTO clientes (nome, email)
@@ -316,7 +316,7 @@ FROM clientes
 WHERE id_cliente = 1;
 ```
 
-### Definiçº£o de constraint
+### Definição de constraint
 
 ```sql
 ALTER TABLE clientes
@@ -326,17 +326,17 @@ CHECK (email LIKE '%@%.%');
 
 Esses comandos ilustram o uso de SQL no modelo relacional, com tabelas, chaves e constraints.
 
-## Resumo da evoluçº£o
+## Resumo da evolução
 
-- **Anos 1960:** sistemas de arquivos, modelo hierÚºrquico (IMS).
-- **1964:** modelo em rede (CODASYL).
+- **Anos 1960:** sistemas de arquivos e modelo hierárquico, como o IMS.
+- **1964:** modelo em rede, associado ao CODASYL.
 - **1970:** modelo relacional proposto por Ted Codd.
-- **Anos 1970:** projeto System R, criaçº£o do SQL.
+- **Anos 1970:** projeto System R e criação do SQL.
 - **1977:** Oracle como um dos primeiros SGBDs relacionais comerciais.
 - **1981:** IBM SQL/DS.
 - **1983:** IBM DB2.
-- **DÉ©cadas seguintes:** consolidaçº£o do modelo relacional e padrØ£o SQL.
+- **Décadas seguintes:** consolidação do modelo relacional e do padrão SQL.
 
-## ConclusØ£o
+## Conclusão
 
-Os SGBDs surgiram para resolver problemas de inconsistÛncia, custo e manutençº£o em sistemas baseados em arquivos. A evoluçº£o passou por modelos hierÚºrquicos e em rede atÉ© chegar ao modelo relacional, baseado em ÚÝ©lgebra relacional e tabelas. O trabalho de Ted Codd, o projeto System R e o surgimento do SQL marcaram a transiçº£o para SGBDs modernos, como Oracle, IBM SQL/DS e DB2. No modelo atual, usuÚºrios convencionais e administradores interagem com o banco por meio de linguagens de definiçº£o e manipulaçº£o, enquanto componentes internos como gerenciador de armazenamento e de buffer garantem desempenho e durabilidade.
+Os SGBDs surgiram para resolver problemas de inconsistência, custo e manutenção em sistemas baseados em arquivos. A evolução passou por modelos hierárquicos e em rede até chegar ao modelo relacional, baseado em álgebra relacional e tabelas. O trabalho de Ted Codd, o projeto System R e o surgimento do SQL marcaram a transição para SGBDs modernos, como Oracle, IBM SQL/DS e DB2. No modelo atual, usuários convencionais e administradores interagem com o banco por meio de linguagens de definição e manipulação, enquanto componentes internos como os gerenciadores de armazenamento e de buffer garantem desempenho e durabilidade.
